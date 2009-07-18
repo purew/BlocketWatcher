@@ -3,10 +3,6 @@
 import urllib
 import re
 
-def filterAds(html):
-	regExp = '<td nowrap="nowrap" class="thumbs_subject">.*?<a href="(.*?)">\s*(.*?)\s*</a><br>\s*([\d| ]*)'
-	m = re.findall(regExp,html, re.DOTALL)
-	return m
 
 
 def findAds():
@@ -18,9 +14,15 @@ def findAds():
 	f = file("stereo.html", "r")
 	html = f.read()
 	
-	m = filterAds(html)
+	regExp = '<td nowrap="nowrap" class="thumbs_subject">.*?<a href="(.*?)">\s*(.*?)\s*</a><br>\s*([\d| ]*)'
+	m = re.findall(regExp,html, re.DOTALL)
 	
-	return m
+	itemList = []
+	for item in m:
+		price = item[2]
+		price = price.replace(' ','')
+		itemList.append((item[1],price))
+	return itemList
 	
 	
 
@@ -35,5 +37,5 @@ if __name__ == "__main__":
 	#for i in range(len(m),0):
 		print "**************************"
 		#print item.group(1)
-		print "Föremål: "+item[1]
-		print item[2]
+		print "Föremål: "+item[0]
+		print item[1]
