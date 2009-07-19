@@ -1,27 +1,40 @@
- # -*- coding: iso-8859-15 -*-
+ # -*- coding: utf-8 -*-
+
 
 import urllib
 import re
 
+def utf8(str):
+	"""Translate a latin1-string to utf8-encoding."""
+	
+	#return unicode(str, "iso-8859-1").encode("utf-8")
+	return str
 
 
 def findAds():
+	"""Fetch ads from blocket and other ad-sites."""
+	
 	baseURL = "http://www.blocket.se/hela_sverige"
 	options = "?q=marantz+ELLER+onkyo&cg=0&w=1&st=s&st=u&st=b&ca=15&md=th"
 	website = urllib.urlopen(baseURL+options)
 
-	#html = website.read()
-	f = file("stereo.html", "r")
-	html = f.read()
+	CACHED_WEBSITE = True
+	
+	if not CACHED_WEBSITE:
+		html = website.read()
+	else:
+		f = file("stereo.html", "r")
+		html = f.read()
 	
 	regExp = '<td nowrap="nowrap" class="thumbs_subject">.*?<a href="(.*?)">\s*(.*?)\s*</a><br>\s*([\d| ]*)'
 	m = re.findall(regExp,html, re.DOTALL)
 	
 	itemList = []
 	for item in m:
+		header = utf8(item[1])
 		price = item[2]
 		price = price.replace(' ','')
-		itemList.append((item[1],price))
+		itemList.append((header,price))
 	return itemList
 	
 	
