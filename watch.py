@@ -7,8 +7,8 @@ import re
 def utf8(str):
 	"""Translate a latin1-string to utf8-encoding."""
 	
-	#return unicode(str, "iso-8859-1").encode("utf-8")
-	return str
+	return unicode(str, "iso-8859-1").encode("utf-8")
+
 
 
 def findAds():
@@ -18,7 +18,7 @@ def findAds():
 	options = "?q=marantz+ELLER+onkyo&cg=0&w=1&st=s&st=u&st=b&ca=15&md=th"
 	website = urllib.urlopen(baseURL+options)
 
-	CACHED_WEBSITE = True
+	CACHED_WEBSITE = False
 	
 	if not CACHED_WEBSITE:
 		html = website.read()
