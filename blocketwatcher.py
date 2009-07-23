@@ -5,7 +5,9 @@
 import wx
 import watch
 
-
+# Globals
+newItemBitmap = 0
+oldItemBitmap = 0
 
 
 class BlocketWatcherGUI(wx.Frame):
@@ -42,12 +44,15 @@ class BlocketWatcherGUI(wx.Frame):
 		wx.EVT_MENU(self.tray, self.TRAY_MENU_ABOUT, self.onAbout)
 		wx.EVT_MENU(self.tray, self.TRAY_MENU_CLOSE, self.exitProgram)
 
-		self.newItemImage  = wx.Image("new_item.png")
-		self.newItemBitmap = wx.BitmapFromImage(self.newItemImage)
-		self.oldItemImage  = wx.Image("old_item.png")
-		self.oldItemBitmap = wx.BitmapFromImage(self.oldItemImage)
-		self.deleteImage   = wx.Image("delete.png")
-		self.deleteBitmap  = wx.BitmapFromImage(self.deleteImage)
+		global newItemBitmap
+		global oldItemBitmap
+		global deleteBitmap
+		newItemImage  = wx.Image("new_item.png")
+		newItemBitmap = wx.BitmapFromImage(newItemImage)
+		oldItemImage  = wx.Image("old_item.png")
+		oldItemBitmap = wx.BitmapFromImage(oldItemImage)
+		deleteImage   = wx.Image("delete.png")
+		deleteBitmap  = wx.BitmapFromImage(deleteImage)
 
 
 	def showItemsWindow(self, event):
@@ -60,10 +65,10 @@ class BlocketWatcherGUI(wx.Frame):
 			self.drawItemList(itemList)
 
 			self.Show()
-			print "*showing item-window*"
+
 		else:
 			self.Hide()
-			print "*hiding item-window*"
+
 
 
 	def drawItemList(self, itemList):
@@ -71,13 +76,14 @@ class BlocketWatcherGUI(wx.Frame):
 
 		for item in itemList:
 
-			widget = itemWidget(self.scroll, self.newItemBitmap, item[0])
+			widget = itemWidget(self.scroll, item[0])
 			self.sizer.Add(widget, 0, wx.LEFT|wx.ALL, 5)
 
 		self.scroll.SetSizer(self.sizer_container)
 
 
 	def OnTaskBarRight(self, event):
+		"""What happens on a rightclick on tray-icon."""
 		menu = wx.Menu()
 		menu.Append(self.TRAY_MENU_OPTIONS, "Change the preferences")
 		menu.Append(self.TRAY_MENU_ABOUT, "About the software")
@@ -103,27 +109,30 @@ class BlocketWatcherGUI(wx.Frame):
 	def OnSize(self, event):
 		self.scroll.SetSize(self.GetClientSize())
 	def exitProgram(self, event):
+		self.tray.RemoveIcon()
 		app.ExitMainLoop()
 
 
 
-class itemWidget(wx.Window):
-	def __init__(self, parent, statusBitmap, name):
-		wx.Window.__init__(self,parent)
+class itemWidget(wx.BoxSizer):
+	def __init__(self, parent, name):
+		wx.BoxSizer.__init__(self,wx.HORIZONTAL)
 
-		#self.SetSize((200,50))
+		#self.SetSize((200,20))
 
-		self.container = wx.BoxSizer(wx.VERTICAL)
-		self.SetSizer(self.container)
+		self.container = wx.BoxSizer(wx.HORIZONTAL)
+		self.Add(self.container)
 
-		self.statusIcon = wx.StaticBitmap(self, -1, statusBitmap)
-		self.nameText = wx.StaticText(self,-1, name)
+		self.statusIcon = wx.StaticBitmap(parent, wx.ID_ANY, newItemBitmap)
+		self.nameText = wx.Button(parent,wx.ID_ANY, name)
+		self.deleteButton = wx.BitmapButton(parent, wx.ID_ANY, deleteBitmap)
 
-		self.container.Add(self.statusIcon, 0, wx.ALL,5)
-		self.container.Add(self.nameText, 1,  wx.ALL|wx.EXPAND,5)
+		border = 2
+		self.container.Add(self.statusIcon, 0, wx.LEFT|wx.ALIGN_RIGHT,border)
+		self.container.Add(self.nameText, 0,  wx.ALL|wx.EXPAND,border)
+		self.container.Add(self.deleteButton, 0,  wx.RIGHT,border)
 
-		self.SetSizer(self.container)
-		self.container.Fit(self)
+
 
 # If the program is run directly or passed as an argument to the python
 # interpreter then create a HelloWorld instance and show it
